@@ -1,0 +1,17 @@
+---
+# Install MySQL (MariaDB) packages
+- name: Add Kong repository
+  yum_repository:
+    name: gateway-2.x-centos-7
+    description: Kong API Gateway
+    baseurl: https://download.konghq.com/gateway-2.x-centos-7/
+    gpgcheck: no
+
+- name: Install Kong API Gateway (Open Source Edition)
+  yum: name=kong-2.4.1 state=present
+
+- name: Copy configuration files across
+  copy: src=files/{{item}} dest=/home/vagrant/{{item}}
+  with_items:
+    - kong.yml
+    - kong.conf

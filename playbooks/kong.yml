@@ -1,0 +1,5 @@
+# Provion file for a single VM with kong api gateway
+- hosts: all
+  become: yes
+  roles:
+    - kong

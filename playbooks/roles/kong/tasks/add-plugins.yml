@@ -1,0 +1,13 @@
+- name: Add Plugin Dir
+  file:
+    path: /usr/local/share/lua/5.1/kong/plugins/custom-auth
+    state: directory
+    mode: 0755
+
+- name: Copy configuration files across
+  copy:
+    src: files/plugins/custom-auth/{{item}}
+    dest: /usr/local/share/lua/5.1/kong/plugins/custom-auth/{{item}}
+  with_items:
+    - schema.lua
+    - handler.lua
