@@ -24,22 +24,58 @@ _transform: true
 # can be listed in the top-level as an array of objects:
 
 services:
-  - name: synchweb
-    url: https://192.168.33.10/api
-    routes:
-      - name: synchweb-api
-        paths:
-          - /api/v1
-  - name: synchweb-restricted
-    url: https://192.168.33.10/api
-    routes:
-      - name: synchweb-api-r
-        paths:
-          - /api/v1/feedback
+# Service that requires no protection
+- name: synchweb-options
+  url: https://192.168.33.10/api/options
+  routes:
+  - name: option-route
+    paths:
+    - /api/options
+
+- name: synchweb-authenticate
+  url: https://192.168.33.10/api/authenticate
+  routes:
+  - name: authenticate-route
+    paths:
+    - /api/authenticate
+
+- name: synchweb
+  url: https://192.168.33.10/api
+
+- name: py-ispyb
+  url: http://192.168.33.40:5000/ispyb/api/v1
+
+- name: synchweb-logistics-api
+  url: https://192.168.33.10/api/shipment/dewars/history
+  routes:
+  - name: add-history
+    paths:
+    - /api/shipment/dewars/history
+    hosts:
+    - ispyb-logistics.diamond.ac.uk
+
+# Can also define routes here...
+routes:
+- name: synchweb
+  service: synchweb
+  paths:
+    - /api
+
+- name: py-ispyb
+  service: py-ispyb
+  paths:
+    - /api/v1
 
 plugins:
-  - name: custom-auth
-    service: synchweb-restricted
-    config:
-      introspection_endpoint: https://192.168.33.10/api/authenticate/check
-      authorization_endpoint: https://192.168.33.10/api/options
+- name: ip-restriction
+  service: synchweb-logistics-api
+  config:
+    allow:
+    - 192.168.33.1
+
+# Example to test custom auth module
+- name: custom-auth
+  service: synchweb-restricted
+  config:
+    introspection_endpoint: https://192.168.33.10/api/authenticate/check
+    authorization_endpoint: https://192.168.33.10/api/options
